@@ -1,0 +1,28 @@
+version: '3'
+services:
+  mongo_db:
+    container_name: db_container
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    ports:
+      - 27017:27017 # Only to connect compass
+    volumes:
+      - $PWD/data:/data/db
+
+  url_shortner_service:
+    image: url_shortner_server
+    container_name: url_shortner_server
+    build: 
+      context: .
+    environment:
+      MONGODB_USERNAME: root
+      MONGODB_PASSWORD: rootpassword
+      MONGODB_DB_NAME: url-shortner
+      MONGODB_URL: mongodb://root:rootpassword@mongo_db:27017/
+    ports: 
+      - 3000:4000
+    depends_on:
+      - mongo_db
